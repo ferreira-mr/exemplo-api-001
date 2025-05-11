@@ -6,35 +6,28 @@ ini_set('log_errors', 1);
 ini_set('error_log', './php.log');
 error_reporting(E_ALL);
 
-require_once __DIR__ . '/scr/Request.php';
-require_once __DIR__ . '/scr/Response.php';
+require_once __DIR__ . '/src/Request.php';
+require_once __DIR__ . '/src/Response.php';
+require_once __DIR__ . '/src/Handler.php';
 
 $request = new Request($_SERVER, $_GET, $_POST);
-
 $response = new Response();
+$handler = null;
 
 $resource = $request->getResource();
 
-$method = $request->getMethod();
-
-$RESOURCE_IS_COMPANIES = 'companies';
-$RESOURCE_IS_PRODUCTS = 'products';
-$RESOURCE_IS_IMAGES = 'images';
-
 switch ($resource) {
-    case $RESOURCE_IS_COMPANIES:
-        $responseData = ['resource' => $RESOURCE_IS_COMPANIES];
-        $response->sendSuccess($responseData);
+    case 'companies':
+        $handler = new Handler($request, $response);
+        $handler->execute();
         break;
-
-    case $RESOURCE_IS_PRODUCTS:
-        $responseData = ['resource' => $RESOURCE_IS_PRODUCTS];
-        $response->sendSuccess($responseData);
+    case 'products':
+        $handler = new Handler($request, $response);
+        $handler->execute();
         break;
-
-    case $RESOURCE_IS_IMAGES:
-        $responseData = ['resource' => $RESOURCE_IS_IMAGES];
-        $response->sendSuccess($responseData);
+    case 'images':
+        $handler = new Handler($request, $response);
+        $handler->execute();
         break;
 
     default:
@@ -43,5 +36,9 @@ switch ($resource) {
             404,
             "Recursos disponíveis: companies, products, images."
         );
-        break;
+        exit;
+}
+
+if (session_status() == PHP_SESSION_ACTIVE) {
+    session_write_close();
 }
