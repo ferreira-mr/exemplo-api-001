@@ -1,0 +1,18 @@
+RewriteEngine On
+
+# Opcional: Defina o RewriteBase se o .htaccess não estiver na raiz do DocumentRoot.
+# Se o .htaccess está em /api/, use RewriteBase /api/
+# Se o .htaccess está na raiz do site (DocumentRoot), use RewriteBase /
+# Ajuste conforme a localização do seu diretório API em relação ao DocumentRoot.
+# Exemplo para uma API em um subdiretório chamado "api":
+
+RewriteBase /api/
+
+# Se o arquivo ou diretório solicitado NÃO existir fisicamente...
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# ...então, encaminhe a solicitação para o index.php (no diretório atual).
+# O [L] garante que esta é a última regra a ser processada.
+# O [QSA] anexa quaisquer parâmetros de query string originais à URL reescrita.
+RewriteRule ^(.*)$ index.php [L,QSA]
