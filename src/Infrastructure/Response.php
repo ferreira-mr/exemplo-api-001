@@ -13,7 +13,7 @@ class Response {
         exit;
     }
 
-    public function sendError(string $message, int $statusCode, string $details = null): void
+    public function sendError(string $message, int $statusCode, ?string $details = null): void
     {
         http_response_code($statusCode);
         header($this->JSON_HEADER);
@@ -25,12 +25,22 @@ class Response {
             ]
         ];
 
-        if ($details !== null)
+        if ($details !== null && is_string($details) && !empty($details))
         {
             $errorResponse['error']['details'] = $details;
         }
 
         echo json_encode($errorResponse);
         exit;
+    }
+
+    public function sendNotFound(string $resourceType = 'Resource', ?string $identifier = null, ?string $details = null): void
+    {
+        $message = ucfirst($resourceType);
+        if ($identifier !== null) {
+            $message .= " with ID '{$identifier}'";
+        }
+        $message .= " not found.";
+        $this->sendError($message, 404, $details);
     }
 }

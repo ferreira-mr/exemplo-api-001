@@ -5,7 +5,7 @@ class Request {
     private string $uriValue;
     private string $resourceValue;
     private array $queryParameters;
-    private array $requestPayload; // Alterado de $postParameters para um nome mais genérico
+    private array $requestPayload;
     private string $contentType;
 
     public function __construct(array $serverData, array $getData, array $postData)
