@@ -5,15 +5,32 @@ class Request {
     private string $uriValue;
     private string $resourceValue;
     private array $queryParameters;
-    private array $postParameters;
+    private array $requestPayload; // Alterado de $postParameters para um nome mais genérico
+    private string $contentType;
 
     public function __construct(array $serverData, array $getData, array $postData)
     {
         $this->methodValue = $serverData['REQUEST_METHOD'] ?? '';
         $this->uriValue = $serverData['REQUEST_URI'] ?? '';
-        $this->queryParameters = $getData;
-        $this->postParameters = $postData;
+        $this->queryParameters = $getData; // $_GET
+        $this->contentType = $serverData['CONTENT_TYPE'] ?? '';
+        $this->requestPayload = [];
 
+        $method = strtoupper($this->methodValue);
+
+        if ($method === 'POST' || $method === 'PUT' || $method === 'PATCH') {
+            if (stripos($this->contentType, 'application/json') !== false) {
+                $input = file_get_contents('php://input');
+                if ($input !== false) {
+                    $jsonData = json_decode($input, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($jsonData)) {
+                        $this->requestPayload = $jsonData;
+                    }
+                }
+            } elseif (!empty($postData)) { // $_POST
+                $this->requestPayload = $postData;
+            }
+        }
         $this->resourceValue = $this->setResource();
     }
 
@@ -24,7 +41,7 @@ class Request {
 
     public function getUri(): string
     {
-        return  $this->uriValue;
+        return $this->uriValue;
     }
 
     private function setResource() : string
@@ -36,11 +53,11 @@ class Request {
         }
 
         $apiPrefix = '/api/';
-        $apiPrefixLength = strlen($apiPrefix);
 
         if (str_starts_with($path, $apiPrefix)) {
-            $resourcePath = substr($path, $apiPrefixLength);
-            return trim($resourcePath, '/');
+            $relevantPath = substr($path, strlen($apiPrefix));
+            $segments = explode('/', trim($relevantPath, '/'));
+            return $segments[0] ?? '';
         }
 
         return '';
@@ -51,14 +68,16 @@ class Request {
         return $this->resourceValue;
     }
 
-    public function getParams(string $param) : string
+    public function getParams(string $param): ?string
     {
-        return $this->queryParameters[$param];
+        return isset($this->queryParameters[$param]) && is_string($this->queryParameters[$param])
+            ? $this->queryParameters[$param]
+            : null;
     }
 
-    public function getPostParam(string $param) : string
+    public function getPostParam(string $param): mixed
     {
-        return $this->postParameters[$param];
+        return $this->requestPayload[$param] ?? null;
     }
 
     public function getAllQueryParams(): array
@@ -68,6 +87,6 @@ class Request {
 
     public function getAllPostParams(): array
     {
-        return $this->postParameters;
+        return $this->requestPayload;
     }
 }
