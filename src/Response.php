@@ -1,7 +1,5 @@
 <?php
 
-use JetBrains\PhpStorm\NoReturn;
-
 class Response {
     private string $JSON_HEADER = 'Content-Type: application/json';
     public function sendSuccess(array $data, int $statusCode = 200): void
