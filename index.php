@@ -3,13 +3,14 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 ini_set('log_errors', 1);
-ini_set('error_log', './php.log'); // Garanta que o servidor web pode escrever neste arquivo/pasta
+ini_set('error_log', './php.log');
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/src/Infrastructure/Request.php';
 require_once __DIR__ . '/src/Infrastructure/Response.php';
 require_once __DIR__ . '/src/Handlers/BaseHandler.php';
 require_once __DIR__ . '/src/Handlers/StudentsHandler.php';
+require_once __DIR__ . '/src/Handlers/ClassroomHandler.php';
 require_once __DIR__ . '/src/Handlers/NotImplementedHandler.php';
 require_once __DIR__ . '/src/Infrastructure/Database.php';
 require_once __DIR__ . '/src/Models/BaseModel.php';
@@ -36,6 +37,9 @@ $resource = $request->getResource();
 switch ($resource) {
     case 'students':
         $handler = new StudentsHandler($request, $response);
+        break;
+    case 'classrooms':
+        $handler = new ClassroomHandler($request, $response);
         break;
 
     // Comente ou remova para o foco inicial ser apenas em 'students'

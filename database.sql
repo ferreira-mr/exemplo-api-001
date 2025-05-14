@@ -1,14 +1,29 @@
-CREATE DATABASE `simple-api`;
+CREATE DATABASE IF NOT EXISTS `simple-api`;
 
 USE `simple-api`;
 
-CREATE TABLE `students` (
-                            `id` INT AUTO_INCREMENT PRIMARY KEY,
-                            `name` VARCHAR(255) NOT NULL,
-                            `age` INT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS `students` (
+                                          `id` INT AUTO_INCREMENT PRIMARY KEY,
+                                          `name` VARCHAR(255) NOT NULL,
+                                          `age` INT NOT NULL
+);
 
+INSERT INTO `students` (`name`, `age`) VALUES
+                                           ('João Silva', 18),
+                                           ('Maria Souza', 19),
+                                           ('Pedro Almeida', 17),
+                                           ('Ana Costa', 20),
+                                           ('Lucas Oliveira', 18);
 
-INSERT INTO `students` (`name`, `age`) VALUES ('Alice', 20);
-INSERT INTO `students` (`name`, `age`) VALUES ('Bob', 22);
-INSERT INTO `students` (`name`, `age`) VALUES ('Charlie', 19);
+CREATE TABLE IF NOT EXISTS `classrooms` (
+                                            `id` INT AUTO_INCREMENT PRIMARY KEY,
+                                            `name` VARCHAR(255) NOT NULL UNIQUE,
+                                            `capacity` INT NOT NULL
+);
+
+INSERT INTO `classrooms` (`name`, `capacity`) VALUES
+                                                  ('Sala 101', 30),
+                                                  ('Sala 102', 25),
+                                                  ('Laboratório A', 20),
+                                                  ('Auditório Principal', 100),
+                                                  ('Sala de Reuniões', 15);
